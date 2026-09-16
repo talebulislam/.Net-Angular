@@ -1,102 +1,383 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>60-Day .NET & Angular</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>60-Day .NET & Angular Full-stack development</h1>
-            <p>Structured roadmap to master essential concepts, frameworks, and best practices for full-stack development</p>
-            
-            <div class="stats-container">
-                <div class="stat-card">
-                    <div class="stat-value">60</div>
-                    <div class="stat-label">Days of Prep</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">10</div>
-                    <div class="stat-label">Weeks</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">120+</div>
-                    <div class="stat-label">Topics</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">200+</div>
-                    <div class="stat-label">Resources</div>
-                </div>
-            </div>
-            
-            <div class="tech-icons">
-                <div class="icon"><i class="fab fa-microsoft"></i></div>
-                <div class="icon"><i class="fab fa-angular"></i></div>
-                <div class="icon"><i class="fab fa-js"></i></div>
-                <div class="icon"><i class="fas fa-database"></i></div>
-                <div class="icon"><i class="fab fa-git-alt"></i></div>
-                <div class="icon"><i class="fas fa-cloud"></i></div>
-            </div>
-        </header>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <section class="auth-screen" id="auth-screen" aria-labelledby="login-title">
+      <div class="auth-card">
+        <span class="eyebrow">Developer learning workspace</span>
+        <h1 id="login-title">Welcome back</h1>
+        <p id="auth-description">
+          Sign in to keep your roadmap progress synced to this browser.
+        </p>
+        <form id="login-form" novalidate>
+          <label for="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            required
+            placeholder="you@example.com"
+          />
+          <label for="password">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            required
+            placeholder="Your password"
+          />
+          <p class="form-error" id="login-error" role="alert" hidden></p>
+          <button class="btn btn-primary auth-submit" type="submit">
+            <i class="fas fa-arrow-right-to-bracket"></i> Sign in
+          </button>
+        </form>
+        <form id="register-form" novalidate hidden>
+          <label for="register-name">Name</label>
+          <input
+            id="register-name"
+            name="name"
+            type="text"
+            autocomplete="name"
+            required
+            minlength="2"
+            maxlength="80"
+            placeholder="Your name"
+          />
+          <label for="register-email">Email</label>
+          <input
+            id="register-email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            required
+            placeholder="you@example.com"
+          />
+          <label for="register-password">Password</label>
+          <input
+            id="register-password"
+            name="password"
+            type="password"
+            autocomplete="new-password"
+            required
+            minlength="8"
+            maxlength="128"
+            placeholder="At least 8 characters"
+          />
+          <label for="register-confirm-password">Confirm password</label>
+          <input
+            id="register-confirm-password"
+            name="confirmPassword"
+            type="password"
+            autocomplete="new-password"
+            required
+            minlength="8"
+            maxlength="128"
+            placeholder="Repeat your password"
+          />
+          <p class="form-error" id="register-error" role="alert" hidden></p>
+          <button class="btn btn-primary auth-submit" type="submit">
+            <i class="fas fa-user-plus"></i> Create account
+          </button>
+        </form>
+        <button class="auth-switch" id="auth-switch" type="button">
+          Create a new account
+        </button>
+      </div>
+    </section>
 
-        <section class="progress-section">
-            <h2><i class="fas fa-chart-line"></i> Your Progress: <span id="progress-text">12/60 Days Completed</span></h2>
-            <div class="progress-container">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progress-fill"></div>
-                </div>
-                <div class="progress-text" id="progress-percent">20%</div>
-            </div>
-            <div class="controls">
-                <button class="btn btn-primary" id="today-btn">
-                    <i class="fas fa-calendar-day"></i> Jump to Today
-                </button>
-                <button class="btn btn-secondary" id="reset-btn">
-                    <i class="fas fa-redo"></i> Reset Progress
-                </button>
-                <button class="btn btn-outline">
-                    <i class="fas fa-print"></i> Print Plan
-                </button>
-                <button class="btn btn-warning">
-                    <i class="fas fa-star"></i> Bookmark
-                </button>
-            </div>
-        </section>
+    <div class="container app-shell" id="app-shell" hidden>
+      <section class="pending-panel" id="pending-panel" hidden>
+        <span class="eyebrow">Access review</span>
+        <h1>Your account is pending approval</h1>
+        <p>
+          An administrator needs to approve your workspace access. You can
+          return here after approval.
+        </p>
+        <button class="btn btn-outline" id="pending-logout-btn" type="button">
+          <i class="fas fa-arrow-right-from-bracket"></i> Sign out
+        </button>
+      </section>
 
-        <div class="plan-container">
-            <nav class="weeks-nav">
-                <h2><i class="fas fa-calendar-week"></i> Weekly Structure</h2>
-                <ul class="week-list" id="week-list">
-                    <!-- Weeks will be populated by JavaScript -->
-                </ul>
-                <div class="legend">
-                    <div class="legend-item">
-                        <div class="legend-color legend-dotnet"></div>
-                        <span>.NET Focus</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color legend-angular"></div>
-                        <span>Angular Focus</span>
-                    </div>
-                </div>
-            </nav>
-
-            <div class="days-container" id="days-container">
-                <!-- Day cards will be populated by JavaScript -->
+      <div class="user-bar">
+        <span><i class="fas fa-circle-check"></i> Personal workspace</span>
+        <div class="user-actions">
+          <span id="user-name"></span>
+          <div id="admin-nav" hidden>
+            <button
+              class="btn btn-outline btn-small"
+              id="admin-roadmap-btn"
+              type="button"
+            >
+              <i class="fas fa-map"></i> Roadmap
+            </button>
+            <button
+              class="btn btn-outline btn-small"
+              id="admin-access-btn"
+              type="button"
+            >
+              <i class="fas fa-shield-halved"></i> Access control
+            </button>
+          </div>
+          <button
+            class="btn btn-outline btn-small"
+            id="change-password-btn"
+            type="button"
+          >
+            <i class="fas fa-key"></i> Change password
+          </button>
+          <button
+            class="profile-trigger"
+            id="profile-trigger"
+            type="button"
+            aria-expanded="false"
+          >
+            <span class="profile-avatar" id="profile-avatar">U</span
+            ><span class="profile-label">Profile</span
+            ><i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="profile-menu" id="profile-menu" hidden>
+            <strong id="profile-name"></strong><small id="profile-email"></small
+            ><span class="profile-role" id="profile-role"></span>
+            <button id="profile-password-btn" type="button">
+              <i class="fas fa-key"></i> Security settings
+            </button>
+          </div>
+          <button
+            class="btn btn-outline btn-small"
+            id="logout-btn"
+            type="button"
+          >
+            <i class="fas fa-arrow-right-from-bracket"></i> Log out
+          </button>
+        </div>
+      </div>
+      <dialog class="password-dialog" id="password-dialog">
+        <form id="password-form" method="dialog" novalidate>
+          <div class="dialog-heading">
+            <div>
+              <span class="eyebrow">Account security</span>
+              <h2>Change password</h2>
             </div>
+            <button
+              class="dialog-close"
+              id="close-password-btn"
+              type="button"
+              aria-label="Close"
+            >
+              &times;
+            </button>
+          </div>
+          <label for="current-password">Current password</label>
+          <input
+            id="current-password"
+            name="currentPassword"
+            type="password"
+            autocomplete="current-password"
+            required
+          />
+          <label for="new-password">New password</label>
+          <input
+            id="new-password"
+            name="newPassword"
+            type="password"
+            autocomplete="new-password"
+            minlength="8"
+            maxlength="128"
+            required
+          />
+          <label for="confirm-new-password">Confirm new password</label>
+          <input
+            id="confirm-new-password"
+            name="confirmNewPassword"
+            type="password"
+            autocomplete="new-password"
+            minlength="8"
+            maxlength="128"
+            required
+          />
+          <p class="form-error" id="password-error" role="alert" hidden></p>
+          <button class="btn btn-primary" type="submit">
+            <i class="fas fa-lock"></i> Update password
+          </button>
+        </form>
+      </dialog>
+      <section class="admin-panel" id="admin-panel" data-admin-view hidden>
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Control center</span>
+            <h1>Access management</h1>
+            <p>Review workspace requests and manage account access.</p>
+          </div>
+          <span class="admin-badge"
+            ><i class="fas fa-shield-halved"></i> Administrator</span
+          >
+        </div>
+        <div class="admin-stats" id="admin-stats"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Progress</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="users-table-body"></tbody>
+          </table>
+        </div>
+        <p class="form-error" id="admin-error" role="alert" hidden></p>
+      </section>
+      <dialog class="user-progress-dialog" id="user-progress-dialog">
+        <div class="dialog-heading">
+          <div>
+            <span class="eyebrow">Account activity</span>
+            <h2 id="progress-dialog-title">User progress</h2>
+          </div>
+          <button
+            class="dialog-close"
+            id="close-progress-btn"
+            type="button"
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+        <div class="progress-summary" id="progress-dialog-summary"></div>
+        <div class="progress-day-list" id="progress-dialog-days"></div>
+      </dialog>
+
+      <header data-user-view>
+        <div class="roadmap-hero-copy">
+          <span class="eyebrow">Learning workspace / 60-day plan</span>
+          <h1>Build your .NET &amp; Angular momentum.</h1>
+          <p>
+            One focused day at a time. Follow the sequence, complete the work,
+            and keep your progress visible.
+          </p>
         </div>
 
-        <footer>
-			<div class="developer-credits">
-				Developed by <a href="https://talebulislam.github.io/" target="_blank">Talebul Islam</a> | © <span id="currentYear"></span> All Rights Reserved
-			</div>
-        </footer>
+        <div class="stats-container">
+          <div class="stat-card">
+            <div class="stat-value">60</div>
+            <div class="stat-label">Days of Prep</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">10</div>
+            <div class="stat-label">Weeks</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">120+</div>
+            <div class="stat-label">Topics</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">200+</div>
+            <div class="stat-label">Resources</div>
+          </div>
+        </div>
+
+        <div class="tech-icons">
+          <div class="icon"><i class="fab fa-microsoft"></i></div>
+          <div class="icon"><i class="fab fa-angular"></i></div>
+          <div class="icon"><i class="fab fa-js"></i></div>
+          <div class="icon"><i class="fas fa-database"></i></div>
+          <div class="icon"><i class="fab fa-git-alt"></i></div>
+          <div class="icon"><i class="fas fa-cloud"></i></div>
+        </div>
+      </header>
+
+      <section class="progress-section" data-user-view>
+        <div class="progress-heading">
+          <div>
+            <span class="eyebrow">Your learning pulse</span>
+            <h2><i class="fas fa-chart-line"></i> Roadmap progress</h2>
+            <p id="progress-text">0/60 Days Completed</p>
+          </div>
+          <div class="progress-percent-wrap">
+            <strong id="progress-percent">0%</strong><span>complete</span>
+          </div>
+        </div>
+        <div class="progress-container" aria-label="Roadmap completion">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+        </div>
+        <div class="controls roadmap-controls">
+          <button class="btn btn-primary" id="today-btn">
+            <i class="fas fa-calendar-day"></i> Jump to Today
+          </button>
+          <button class="btn btn-secondary" id="reset-btn">
+            <i class="fas fa-redo"></i> Reset Progress
+          </button>
+          <button class="btn btn-outline" id="print-btn" type="button">
+            <i class="fas fa-print"></i> Print Plan
+          </button>
+          <button
+            class="btn btn-warning"
+            id="bookmark-btn"
+            type="button"
+            aria-pressed="false"
+          >
+            <i class="fas fa-star"></i> Bookmark
+          </button>
+        </div>
+      </section>
+
+      <div class="plan-container" data-user-view>
+        <nav class="weeks-nav">
+          <div class="weeks-heading">
+            <span class="eyebrow">Your journey</span>
+            <h2><i class="fas fa-calendar-week"></i> Weekly structure</h2>
+            <p>Select a week to focus your study plan.</p>
+          </div>
+          <ul class="week-list" id="week-list">
+            <!-- Weeks will be populated by JavaScript -->
+          </ul>
+          <div class="legend">
+            <div class="legend-item">
+              <div class="legend-color legend-dotnet"></div>
+              <span>.NET Focus</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color legend-angular"></div>
+              <span>Angular Focus</span>
+            </div>
+          </div>
+        </nav>
+
+        <div class="days-container" id="days-container">
+          <!-- Day cards will be populated by JavaScript -->
+        </div>
+      </div>
+
+      <footer data-user-view>
+        <div class="developer-credits">
+          Developed by
+          <a href="https://talebulislam.github.io/" target="_blank"
+            >Talebul Islam</a
+          >
+          | © <span id="currentYear"></span> All Rights Reserved
+        </div>
+      </footer>
     </div>
 
     <script src="script.js"></script>
-</body>
+    <script type="module" src="js/app.js"></script>
+  </body>
 </html>
