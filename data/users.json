@@ -1,0 +1,41 @@
+{
+  "users": [
+    {
+      "id": "user-1",
+      "name": "Demo Developer",
+      "email": "demo@example.com",
+      "passwordHash": "18e80f7b832b2c6b5af9ed570bbbfe35f124f5332b7011fa0438d1865e949dd7b4ec3c1b1dc05903da5d47326ffaf52a5fbb63fc17108bf59694b8752999ac3d",
+      "passwordSalt": "41def84064a44d7724293c9b24cb286e",
+      "role": "user",
+      "approved": true,
+      "completedDays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "id": "admin-1",
+      "name": "Platform Administrator",
+      "email": "admin@example.com",
+      "passwordHash": "673bfbb4fc76dfaea545e3a4531d8f0c2539fbfcba013b4a4f0112391e521752f75e91442901e6c685ceda282cda73ac6face919791376ec1d998c98c264497d",
+      "passwordSalt": "dcf870660d9ff6cc3355a084063d035c",
+      "role": "admin",
+      "approved": true,
+      "completedDays": []
+    },
+    {
+      "id": "3b254606-53ee-46dc-a542-b7102b816b5f",
+      "name": "puja pradhan",
+      "email": "pujapradhantest@gmail.com",
+      "passwordHash": "0f1a9b24c520aa9762c054a2b7a9024f0a2a4834badd2339bc8cc3ff7dc64a7dc8193f220d84ed3b8b0014c00f869bed95ba426c3cf09293c9e6cd54c42621f2",
+      "passwordSalt": "e005cbdacd1edac48fa3b1791322d3d0",
+      "role": "user",
+      "approved": true,
+      "completedDays": []
+    }
+  ]
+}
