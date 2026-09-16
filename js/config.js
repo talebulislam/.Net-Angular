@@ -1,5 +1,11 @@
-// Set this to the public URL of the deployed Node API for GitHub Pages.
-// Leave empty when the frontend and API are served by the same local server.
+// Local uses the same-origin Node server. Hosted builds use the deployed API.
+const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+
+// Replace this with the public URL from Render, Railway, Fly.io, etc.
+const productionApiUrl = "";
+
 window.APP_CONFIG = {
-  apiBaseUrl: "",
+  environment: isLocal ? "local" : "production",
+  productionApiUrl,
+  apiBaseUrl: isLocal ? window.location.origin : productionApiUrl,
 };
