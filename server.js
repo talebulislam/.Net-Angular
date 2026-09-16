@@ -6,6 +6,11 @@ const crypto = require("crypto");
 const PORT = Number(process.env.PORT) || 8000;
 const ROOT = __dirname;
 const USERS_FILE = path.join(ROOT, "data", "users.json");
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:8000";
+const COOKIE_ATTRIBUTES =
+  process.env.NODE_ENV === "production"
+    ? "HttpOnly; SameSite=None; Secure; Path=/; Max-Age=86400"
+    : "HttpOnly; SameSite=Lax; Path=/; Max-Age=86400";
 const sessions = new Map();
 const MIME_TYPES = {
   ".html": "text/html",
@@ -79,6 +84,20 @@ function sendJson(response, status, body, headers = {}) {
     ...headers,
   });
   response.end(JSON.stringify(body));
+}
+
+function applyCors(request, response) {
+  const origin = request.headers.origin;
+  if (origin && (origin === FRONTEND_ORIGIN || FRONTEND_ORIGIN === "*")) {
+    response.setHeader("Access-Control-Allow-Origin", origin);
+    response.setHeader("Access-Control-Allow-Credentials", "true");
+    response.setHeader("Vary", "Origin");
+  }
+  response.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET,POST,PATCH,PUT,DELETE,OPTIONS",
+  );
+  response.setHeader("Access-Control-Allow-Headers", "Content-Type");
 }
 
 function readBody(request) {
@@ -160,7 +179,7 @@ async function handleApi(request, response, url) {
       200,
       { user: publicUser(user) },
       {
-        "Set-Cookie": `session=${sessionId}; HttpOnly; SameSite=Lax; Path=/; Max-Age=86400`,
+        "Set-Cookie": `session=${sessionId}; ${COOKIE_ATTRIBUTES}`,
       },
     );
   }
@@ -202,7 +221,7 @@ async function handleApi(request, response, url) {
       201,
       { user: publicUser(user) },
       {
-        "Set-Cookie": `session=${sessionId}; HttpOnly; SameSite=Lax; Path=/; Max-Age=86400`,
+        "Set-Cookie": `session=${sessionId}; ${COOKIE_ATTRIBUTES}`,
       },
     );
   }
@@ -214,7 +233,9 @@ async function handleApi(request, response, url) {
       response,
       200,
       { ok: true },
-      { "Set-Cookie": "session=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0" },
+      {
+        "Set-Cookie": `session=; ${COOKIE_ATTRIBUTES.replace("Max-Age=86400", "Max-Age=0")}`,
+      },
     );
   }
 
@@ -362,6 +383,11 @@ const server = http.createServer(async (request, response) => {
     request.url,
     `http://${request.headers.host || "localhost"}`,
   );
+  applyCors(request, response);
+  if (request.method === "OPTIONS") {
+    response.writeHead(204);
+    return response.end();
+  }
   try {
     if (url.pathname.startsWith("/api/"))
       return await handleApi(request, response, url);
