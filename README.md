@@ -15,7 +15,7 @@ Open `http://localhost:8000` and sign in with:
 - Email: `demo@example.com`
 - Password: `demo1234`
 
-## Deploy with GitHub Pages
+## Deploy with GitHub Pages and CORS Configuration
 
 GitHub Pages hosts the static HTML/CSS/JavaScript only. It cannot run `server.js`, so `/api/auth/login` will return `405 Method Not Allowed` when the frontend is deployed there by itself.
 
@@ -28,17 +28,17 @@ NODE_ENV=production
 FRONTEND_ORIGIN=https://talebulislam.github.io
 ```
 
-4. Copy the public backend URL into `js/config.js`:
+4. Copy the public backend URL into `productionApiUrl` in `js/config.js`:
 
 ```js
-window.APP_CONFIG = {
-  apiBaseUrl: "https://your-api-host.example.com",
-};
+const productionApiUrl = "https://your-api-host.example.com";
 ```
 
 5. Commit and push the change so GitHub Pages rebuilds the frontend.
 
 The production server uses credentialed CORS and `SameSite=None; Secure` HTTP-only session cookies. Do not use `FRONTEND_ORIGIN=*` with credentials in a real deployment.
+
+This repository is published at `https://talebulislam.github.io/.Net-Angular/`. The backend CORS value remains `https://talebulislam.github.io` because the browser sends the site origin without the repository path.
 
 New registrations start as **Pending**. Sign in as the administrator, open the access management dashboard, and approve the account before the user can access the roadmap.
 

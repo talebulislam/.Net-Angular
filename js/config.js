@@ -7,5 +7,5 @@ const productionApiUrl = "";
 window.APP_CONFIG = {
   environment: isLocal ? "local" : "production",
   productionApiUrl,
-  apiBaseUrl: isLocal ? "" : productionApiUrl,
+  apiBaseUrl: isLocal ? window.location.origin : productionApiUrl,
 };
