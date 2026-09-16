@@ -6,6 +6,11 @@ function getApiUrl(path) {
       "The production API URL is not configured. Set PRODUCTION_API_URL in js/config.js.",
     );
   }
+  if (API_BASE_URL.includes("talebulislam.github.io")) {
+    throw new Error(
+      "GitHub Pages hosts the frontend only. Configure PRODUCTION_API_URL with your deployed Node API URL.",
+    );
+  }
   return `${API_BASE_URL}/api${path}`;
 }
 
