@@ -26,34 +26,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configure production API URL
-        env:
-          API_URL: ${{ vars.PRODUCTION_API_URL }}
-        run: |
-          if [ -z "$API_URL" ]; then
-            echo "PRODUCTION_API_URL repository variable is missing"
-            exit 1
-          fi
-
-          python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          config_path = Path("js/config.js")
-          config = config_path.read_text()
-          marker = 'const PRODUCTION_API_URL = "";'
-          replacement = f"const PRODUCTION_API_URL = {json.dumps(os.environ['API_URL'])};"
-
-          if config.count(marker) != 1:
-              raise SystemExit(
-                  f"Expected exactly one empty production API URL in {config_path}"
-              )
-
-          config_path.write_text(config.replace(marker, replacement, 1))
-          PY
-
-            sed -i "s|js/config.js|js/config.js?v=${GITHUB_SHA}|; s|js/app.js|js/app.js?v=${GITHUB_SHA}|" index.html
+      - name: Bust frontend asset caches
+        run: sed -i "s|js/config.js|js/config.js?v=${GITHUB_SHA}|; s|js/app.js|js/app.js?v=${GITHUB_SHA}|" index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

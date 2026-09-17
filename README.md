@@ -31,14 +31,7 @@ SESSION_SECRET=use-a-long-random-secret-value
 
 Set `SESSION_SECRET` to a long random value in Render and keep it unchanged. Production sessions are signed cookies, so users do not lose their login when the Render service restarts.
 
-4. In GitHub repository settings, open **Secrets and variables → Actions → Variables** and add:
-
-```text
-Name: PRODUCTION_API_URL
-Value: https://your-api-host.example.com
-```
-
-The GitHub Actions workflow injects this value into `js/config.js` during the Pages deployment. Do not commit the Render URL directly to the source configuration.
+4. Set the public Render URL in `js/config.js` as `PRODUCTION_API_URL`. This URL is not a secret and is required by the frontend.
 
 5. Configure GitHub Pages to use **GitHub Actions** as its deployment source.
 
