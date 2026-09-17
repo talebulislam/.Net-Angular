@@ -62,4 +62,4 @@ Regular users can change their own password from the same **Change password** ac
 - `js/app.js`: application orchestration and UI events.
 - `script.js`: roadmap data exported for the application.
 
-The server hashes passwords with `scrypt`, never returns password fields, stores sessions in an HTTP-only cookie, and authorizes progress changes from the session user rather than a browser-supplied user id. For production, use HTTPS, a persistent session store, a secret-managed database, CSRF protection, and a reverse proxy with security headers.
+The server hashes passwords with `scrypt`, never returns password fields, and authorizes progress changes from the authenticated session user rather than a browser-supplied user id. It uses an HTTP-only cookie when supported and a signed bearer token for the cross-site GitHub Pages client. For production, use HTTPS, a persistent session store, a secret-managed database, CSRF protection, and a reverse proxy with security headers.

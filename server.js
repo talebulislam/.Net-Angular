@@ -111,7 +111,13 @@ function getSessionUserId(session) {
 }
 
 function getUser(request) {
-  const userId = getSessionUserId(parseCookies(request).session);
+  const authorization = request.headers.authorization || "";
+  const bearerToken = authorization.startsWith("Bearer ")
+    ? authorization.slice(7)
+    : "";
+  const userId =
+    getSessionUserId(bearerToken) ||
+    getSessionUserId(parseCookies(request).session);
   if (!userId) return null;
   return readDatabase().users.find((user) => user.id === userId) || null;
 }
@@ -135,7 +141,10 @@ function applyCors(request, response) {
     "Access-Control-Allow-Methods",
     "GET,POST,PATCH,PUT,DELETE,OPTIONS",
   );
-  response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  response.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization",
+  );
 }
 
 function readBody(request) {
@@ -213,7 +222,7 @@ async function handleApi(request, response, url) {
     return sendJson(
       response,
       200,
-      { user: publicUser(user) },
+      { user: publicUser(user), token: signSession(user.id) },
       {
         "Set-Cookie": `session=${signSession(user.id)}; ${COOKIE_ATTRIBUTES}`,
       },
@@ -253,7 +262,7 @@ async function handleApi(request, response, url) {
     return sendJson(
       response,
       201,
-      { user: publicUser(user) },
+      { user: publicUser(user), token: signSession(user.id) },
       {
         "Set-Cookie": `session=${signSession(user.id)}; ${COOKIE_ATTRIBUTES}`,
       },

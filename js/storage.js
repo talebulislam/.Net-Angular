@@ -1,4 +1,5 @@
 const API_BASE_URL = window.APP_CONFIG?.apiBaseUrl || "";
+import { authenticatedHeaders } from "./session.js";
 
 function getApiUrl(path) {
   if (!API_BASE_URL) {
@@ -18,7 +19,10 @@ async function request(path, options = {}) {
   const response = await fetch(getApiUrl(path), {
     ...options,
     credentials: "include",
-    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+    headers: authenticatedHeaders({
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    }),
   });
   const body = await response.json().catch(() => ({}));
   if (!response.ok)

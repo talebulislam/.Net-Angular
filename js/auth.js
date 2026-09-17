@@ -1,4 +1,9 @@
 const API_BASE_URL = window.APP_CONFIG?.apiBaseUrl || "";
+import {
+  authenticatedHeaders,
+  clearAccessToken,
+  setAccessToken,
+} from "./session.js";
 
 function getApiUrl(path) {
   if (!API_BASE_URL) {
@@ -18,7 +23,10 @@ async function request(path, options = {}) {
   const response = await fetch(getApiUrl(path), {
     ...options,
     credentials: "include",
-    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+    headers: authenticatedHeaders({
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    }),
   });
   const body = await response.json().catch(() => ({}));
   if (!response.ok)
@@ -27,23 +35,29 @@ async function request(path, options = {}) {
 }
 
 export async function signIn(email, password) {
-  const { user } = await request("/auth/login", {
+  const { user, token } = await request("/auth/login", {
     method: "POST",
     body: JSON.stringify({ email, password }),
   });
+  setAccessToken(token);
   return user;
 }
 
 export async function register(name, email, password) {
-  const { user } = await request("/auth/register", {
+  const { user, token } = await request("/auth/register", {
     method: "POST",
     body: JSON.stringify({ name, email, password }),
   });
+  setAccessToken(token);
   return user;
 }
 
 export async function signOut() {
-  await request("/auth/logout", { method: "POST" });
+  try {
+    await request("/auth/logout", { method: "POST" });
+  } finally {
+    clearAccessToken();
+  }
 }
 
 export async function changePassword(currentPassword, newPassword) {
@@ -59,6 +73,7 @@ export async function getCurrentUser() {
     const { user } = await request("/auth/session");
     return user;
   } catch {
+    clearAccessToken();
     return null;
   }
 }
