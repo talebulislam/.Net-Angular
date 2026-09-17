@@ -26,15 +26,23 @@ GitHub Pages hosts the static HTML/CSS/JavaScript only. It cannot run `server.js
 ```text
 NODE_ENV=production
 FRONTEND_ORIGIN=https://talebulislam.github.io
+SESSION_SECRET=use-a-long-random-secret-value
 ```
 
-4. Copy the public backend URL into `productionApiUrl` in `js/config.js`:
+Set `SESSION_SECRET` to a long random value in Render and keep it unchanged. Production sessions are signed cookies, so users do not lose their login when the Render service restarts.
 
-```js
-const productionApiUrl = "https://your-api-host.example.com";
+4. In GitHub repository settings, open **Secrets and variables → Actions → Variables** and add:
+
+```text
+Name: PRODUCTION_API_URL
+Value: https://your-api-host.example.com
 ```
 
-5. Commit and push the change so GitHub Pages rebuilds the frontend.
+The GitHub Actions workflow injects this value into `js/config.js` during the Pages deployment. Do not commit the Render URL directly to the source configuration.
+
+5. Configure GitHub Pages to use **GitHub Actions** as its deployment source.
+
+6. Commit and push the change so GitHub Pages rebuilds the frontend.
 
 The production server uses credentialed CORS and `SameSite=None; Secure` HTTP-only session cookies. Do not use `FRONTEND_ORIGIN=*` with credentials in a real deployment.
 

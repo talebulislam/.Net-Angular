@@ -7,11 +7,15 @@ const PORT = Number(process.env.PORT) || 8000;
 const ROOT = __dirname;
 const USERS_FILE = path.join(ROOT, "data", "users.json");
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:8000";
+if (process.env.NODE_ENV === "production" && !process.env.SESSION_SECRET)
+  throw new Error("SESSION_SECRET must be configured in production.");
+const SESSION_SECRET =
+  process.env.SESSION_SECRET || crypto.randomBytes(32).toString("hex");
+const SESSION_MAX_AGE = 86400;
 const COOKIE_ATTRIBUTES =
   process.env.NODE_ENV === "production"
-    ? "HttpOnly; SameSite=None; Secure; Path=/; Max-Age=86400"
-    : "HttpOnly; SameSite=Lax; Path=/; Max-Age=86400";
-const sessions = new Map();
+    ? `HttpOnly; SameSite=None; Secure; Path=/; Max-Age=${SESSION_MAX_AGE}`
+    : `HttpOnly; SameSite=Lax; Path=/; Max-Age=${SESSION_MAX_AGE}`;
 const MIME_TYPES = {
   ".html": "text/html",
   ".js": "text/javascript",
@@ -71,9 +75,43 @@ function parseCookies(request) {
   );
 }
 
+function signSession(userId) {
+  const payload = Buffer.from(
+    JSON.stringify({ userId, expiresAt: Date.now() + SESSION_MAX_AGE * 1000 }),
+  ).toString("base64url");
+  const signature = crypto
+    .createHmac("sha256", SESSION_SECRET)
+    .update(payload)
+    .digest("base64url");
+  return `${payload}.${signature}`;
+}
+
+function getSessionUserId(session) {
+  const [payload, signature] = String(session || "").split(".");
+  if (!payload || !signature) return null;
+  const expectedSignature = crypto
+    .createHmac("sha256", SESSION_SECRET)
+    .update(payload)
+    .digest("base64url");
+  const actual = Buffer.from(signature);
+  const expected = Buffer.from(expectedSignature);
+  if (
+    actual.length !== expected.length ||
+    !crypto.timingSafeEqual(actual, expected)
+  )
+    return null;
+  try {
+    const { userId, expiresAt } = JSON.parse(
+      Buffer.from(payload, "base64url").toString("utf8"),
+    );
+    return expiresAt > Date.now() ? userId : null;
+  } catch {
+    return null;
+  }
+}
+
 function getUser(request) {
-  const sessionId = parseCookies(request).session;
-  const userId = sessions.get(sessionId);
+  const userId = getSessionUserId(parseCookies(request).session);
   if (!userId) return null;
   return readDatabase().users.find((user) => user.id === userId) || null;
 }
@@ -172,14 +210,12 @@ async function handleApi(request, response, url) {
       return sendJson(response, 403, {
         error: "Your account is waiting for administrator approval.",
       });
-    const sessionId = crypto.randomBytes(32).toString("hex");
-    sessions.set(sessionId, user.id);
     return sendJson(
       response,
       200,
       { user: publicUser(user) },
       {
-        "Set-Cookie": `session=${sessionId}; ${COOKIE_ATTRIBUTES}`,
+        "Set-Cookie": `session=${signSession(user.id)}; ${COOKIE_ATTRIBUTES}`,
       },
     );
   }
@@ -214,21 +250,17 @@ async function handleApi(request, response, url) {
     };
     database.users.push(user);
     writeDatabase(database);
-    const sessionId = crypto.randomBytes(32).toString("hex");
-    sessions.set(sessionId, user.id);
     return sendJson(
       response,
       201,
       { user: publicUser(user) },
       {
-        "Set-Cookie": `session=${sessionId}; ${COOKIE_ATTRIBUTES}`,
+        "Set-Cookie": `session=${signSession(user.id)}; ${COOKIE_ATTRIBUTES}`,
       },
     );
   }
 
   if (request.method === "POST" && url.pathname === "/api/auth/logout") {
-    const sessionId = parseCookies(request).session;
-    sessions.delete(sessionId);
     return sendJson(
       response,
       200,
@@ -332,9 +364,6 @@ async function handleApi(request, response, url) {
     if (userIndex === -1)
       return sendJson(response, 404, { error: "User not found." });
     database.users.splice(userIndex, 1);
-    for (const [sessionId, sessionUserId] of sessions.entries()) {
-      if (sessionUserId === userId) sessions.delete(sessionId);
-    }
     writeDatabase(database);
     return sendJson(response, 200, { ok: true });
   }
