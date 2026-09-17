@@ -53,6 +53,8 @@ jobs:
           config_path.write_text(config.replace(marker, replacement, 1))
           PY
 
+            sed -i "s|js/config.js|js/config.js?v=${GITHUB_SHA}|; s|js/app.js|js/app.js?v=${GITHUB_SHA}|" index.html
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
