@@ -35,7 +35,23 @@ jobs:
             exit 1
           fi
 
-          sed -i "s|const PRODUCTION_API_URL = \"\";|const PRODUCTION_API_URL = \"$API_URL\";|" js/config.js
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          config_path = Path("js/config.js")
+          config = config_path.read_text()
+          marker = 'const PRODUCTION_API_URL = "";'
+          replacement = f"const PRODUCTION_API_URL = {json.dumps(os.environ['API_URL'])};"
+
+          if config.count(marker) != 1:
+              raise SystemExit(
+                  f"Expected exactly one empty production API URL in {config_path}"
+              )
+
+          config_path.write_text(config.replace(marker, replacement, 1))
+          PY
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
